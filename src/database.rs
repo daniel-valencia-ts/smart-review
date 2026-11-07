@@ -1,4 +1,5 @@
 use std::fs::create_dir_all;
+use crate::utils::Item;
 
 use directories::ProjectDirs;
 use rusqlite::Connection;
@@ -16,7 +17,7 @@ pub fn init() -> Result<Connection, Box<dyn std::error::Error>> {
     CREATE TABLE IF NOT EXISTS items (
         id INTEGER PRIMARY KEY,
         title TEXT NOT NULL,
-        description TEXT NOT NULL,
+        description TEXT NULL,
         review_date TEXT NOT NULL,
         successful_recalls INTEGER,
         time_interval INTEGER,
@@ -25,4 +26,16 @@ pub fn init() -> Result<Connection, Box<dyn std::error::Error>> {
     ",
     )?;
     Ok(conn)
+}
+
+pub fn insert_item(database: &mut Connection, item: &Item) -> Result<usize, rusqlite::Error> {
+    let description = match item.description.clone() {
+        Some(desc) => desc,
+        None => String::from("None")
+    };
+
+    database.execute(
+        "INSERT INTO items (id, title, description, review_date, successful_recalls, time_interval, easiness_factor) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
+        (item.id, item.title.as_str(), description, item.review_date.as_str(), item.successful_recalls, item.time_interval, item.easiness_factor)
+    )
 }
