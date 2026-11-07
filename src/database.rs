@@ -67,3 +67,7 @@ pub fn update_item(database: &mut Connection, item: Item) -> Result<usize, rusql
         params![item.review_date, item.successful_recalls, item.time_interval, item.easiness_factor, item.id]
     )
 }
+
+pub fn remove_item(database: &mut Connection, pattern: &str) -> Result<usize, rusqlite::Error> {
+    database.execute("DELETE FROM items WHERE id = ?1 OR title = ?1", params![pattern])
+}

@@ -6,6 +6,8 @@ use database::{get_item, init, insert_item, update_item};
 use helpers::get_stdin_content;
 use utils::Item;
 
+use crate::database::remove_item;
+
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let arguments: Vec<String> = std::env::args().collect();
     let main_argument;
@@ -48,6 +50,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
             None => return Err("Must provide either the item's title or ID to review it.".into()),
         },
+        "remove" => match extra_argument {
+            Some(pattern) => {
+                remove_item(&mut conn, pattern)?;
+            }
+            None => return Err("Must provide either the item's title or ID to be able to remove it".into())
+        }
         _ => return Err("Invalid arguments".into()),
     }
 
