@@ -1,5 +1,5 @@
-use rand::random;
 use chrono::{Duration, Local};
+use rand::random;
 
 #[derive(Clone)]
 pub struct Item {
@@ -43,7 +43,9 @@ pub fn review_item(grade: u8, item: &mut Item) {
     }
 
     item.easiness_factor = update_easiness_factor(item.easiness_factor, grade as f32);
-    item.review_date = (Local::now() + Duration::days(item.time_interval as i64)).format("%b-%d-%Y").to_string();
+    item.review_date = (Local::now() + Duration::days(item.time_interval as i64))
+        .format("%b-%d-%Y")
+        .to_string();
 }
 
 fn update_easiness_factor(easiness_factor: f32, grade: f32) -> f32 {

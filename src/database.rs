@@ -1,5 +1,5 @@
-use std::fs::create_dir_all;
 use crate::utils::Item;
+use std::fs::create_dir_all;
 
 use directories::ProjectDirs;
 use rusqlite::Connection;
@@ -31,7 +31,7 @@ pub fn init() -> Result<Connection, Box<dyn std::error::Error>> {
 pub fn insert_item(database: &mut Connection, item: &Item) -> Result<usize, rusqlite::Error> {
     let description = match item.description.clone() {
         Some(desc) => desc,
-        None => String::from("None")
+        None => String::from("None"),
     };
 
     database.execute(
