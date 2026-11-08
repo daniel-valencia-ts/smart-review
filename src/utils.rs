@@ -1,6 +1,9 @@
-use std::fmt::Display;
+use std::{
+    fmt::Display,
+    time::{SystemTime, UNIX_EPOCH},
+};
 
-use chrono::{Duration, Local};
+use chrono::{DateTime, Duration, Local};
 use rand::random;
 
 #[derive(Clone)]
@@ -8,7 +11,7 @@ pub struct Item {
     pub id: u32,
     pub title: String,
     pub description: Option<String>,
-    pub review_date: String,
+    pub review_date: i64, // Store the review date in POSIX time
     pub successful_recalls: u16,
     pub time_interval: u16,
     pub easiness_factor: f32,
@@ -20,7 +23,10 @@ impl Item {
             id: random::<u32>(),
             title,
             description,
-            review_date: Local::now().format("%b-%d-%Y").to_string(),
+            review_date: match SystemTime::now().duration_since(UNIX_EPOCH) {
+                Ok(n) => n.as_secs() as i64,
+                Err(_) => 0,
+            },
             successful_recalls: 0,
             time_interval: 0,
             easiness_factor: 2.5,
@@ -44,9 +50,11 @@ impl Item {
         }
 
         self.easiness_factor = Self::update_easiness_factor(self.easiness_factor, grade as f32);
-        self.review_date = (Local::now() + Duration::days(self.time_interval as i64))
-            .format("%b-%d-%Y")
-            .to_string();
+        let new_review_date = match DateTime::from_timestamp(self.review_date, 0) {
+            Some(dt) => (dt + Duration::days(self.time_interval as i64)).timestamp(),
+            None => self.time_interval as i64,
+        };
+        self.review_date = new_review_date;
     }
 
     fn update_easiness_factor(easiness_factor: f32, grade: f32) -> f32 {
@@ -67,6 +75,14 @@ impl Display for Item {
             }
             None => (),
         }
-        write!(f, "{}", self.review_date)
+
+        let date_to_display = match DateTime::from_timestamp(self.review_date, 0) {
+            Some(utc) => {
+                let local: DateTime<Local> = DateTime::from(utc);
+                local.format("%b-%d-%Y").to_string()
+            }
+            None => String::from("Invalid date"),
+        };
+        write!(f, "{}", date_to_display)
     }
 }

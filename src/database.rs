@@ -18,7 +18,7 @@ pub fn init() -> Result<Connection, Box<dyn std::error::Error>> {
         id INTEGER PRIMARY KEY,
         title TEXT NOT NULL,
         description TEXT NULL,
-        review_date TEXT NOT NULL,
+        review_date INTEGER,
         successful_recalls INTEGER,
         time_interval INTEGER,
         easiness_factor REAL
@@ -36,7 +36,7 @@ pub fn insert_item(database: &mut Connection, item: &Item) -> Result<usize, rusq
 
     database.execute(
         "INSERT INTO items (id, title, description, review_date, successful_recalls, time_interval, easiness_factor) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
-        (item.id, item.title.as_str(), description, item.review_date.as_str(), item.successful_recalls, item.time_interval, item.easiness_factor)
+        (item.id, item.title.as_str(), description, item.review_date, item.successful_recalls, item.time_interval, item.easiness_factor)
     )
 }
 
@@ -59,6 +59,31 @@ pub fn get_item(
             })
         },
     )?)
+}
+
+pub fn get_all_items(
+    database: &mut Connection,
+) -> Result<Option<Vec<Item>>, Box<dyn std::error::Error>> {
+    let mut stmt = database.prepare("SELECT * FROM items")?;
+
+    let items = stmt
+        .query_map([], |row| {
+            Ok(Item {
+                id: row.get("id")?,
+                title: row.get("title")?,
+                description: row.get("description")?,
+                review_date: row.get("review_date")?,
+                successful_recalls: row.get("successful_recalls")?,
+                time_interval: row.get("time_interval")?,
+                easiness_factor: row.get("easiness_factor")?,
+            })
+        })?
+        .collect::<Result<Vec<_>, rusqlite::Error>>()?;
+
+    match items.len() {
+        0 => Ok(None),
+        _ => Ok(Some(items)),
+    }
 }
 
 pub fn update_item(database: &mut Connection, item: Item) -> Result<usize, rusqlite::Error> {

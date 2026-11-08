@@ -1,5 +1,5 @@
 use crate::{
-    database::{get_item, init, insert_item, remove_item, update_item},
+    database::{get_all_items, get_item, init, insert_item, remove_item, update_item},
     utils::Item,
 };
 
@@ -72,7 +72,21 @@ pub fn run() -> Result<(), Box<dyn std::error::Error>> {
                 let item = get_item(&mut conn, pattern)?;
                 println!("{}", item);
             }
-            None => return Err("Enter the ID or title or the note to be removed".into()),
+            None => {
+                let query = get_all_items(&mut conn)?;
+                match query {
+                    Some(mut items) => {
+                        items.sort_by(|a, b| a.review_date.cmp(&b.review_date));
+                        for item in &items {
+                            println!("{}", item);
+                            print!("\n");
+                        }
+                    }
+                    None => {
+                        println!("There are no items to print");
+                    }
+                }
+            }
         },
         _ => return Err("Invalid arguments".into()),
     }
