@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use chrono::{Duration, Local};
 use rand::random;
 
@@ -53,5 +55,18 @@ impl Item {
             new_ef = 1.3
         }
         new_ef
+    }
+}
+
+impl Display for Item {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        writeln!(f, "{}", self.title)?;
+        match &self.description {
+            Some(desc) => {
+                writeln!(f, "{}", desc)?;
+            }
+            None => (),
+        }
+        write!(f, "{}", self.review_date)
     }
 }

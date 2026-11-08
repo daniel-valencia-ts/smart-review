@@ -67,6 +67,13 @@ pub fn run() -> Result<(), Box<dyn std::error::Error>> {
                 );
             }
         },
+        "show" => match extra_argument {
+            Some(pattern) => {
+                let item = get_item(&mut conn, pattern)?;
+                println!("{}", item);
+            }
+            None => return Err("Enter the ID or title or the note to be removed".into()),
+        },
         _ => return Err("Invalid arguments".into()),
     }
 
