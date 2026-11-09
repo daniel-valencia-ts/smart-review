@@ -27,10 +27,10 @@ pub fn run() -> Result<Option<String>> {
     let mut conn = init()?;
     match main_argument.as_str() {
         "new" => {
-            println!("Enter the item's title:");
+            println!("enter the item's title:");
             let item_title = get_stdin_content()?;
 
-            println!("Enter the item's description (Enter to skip):");
+            println!("enter the item's description (Enter to skip):");
             let input = get_stdin_content()?;
             let item_description = match input.len() {
                 0 => None,
@@ -39,12 +39,12 @@ pub fn run() -> Result<Option<String>> {
 
             let item = Item::new(item_title, item_description);
             insert_item(&mut conn, &item)?;
-            message = Some(String::from("the item was inserted"));
+            message = Some(String::from("item inserted successfully"));
         }
         "review" => match extra_argument {
             Some(pattern) => {
                 let mut item = get_item(&mut conn, pattern)?;
-                println!("Enter the quality of the review (in the range 1 to 5):");
+                println!("enter the quality of the review (in the range 1 to 5):");
                 match get_stdin_content()?.parse::<u8>() {
                     Ok(grade) => {
                         if grade < 1 || grade > 5 {

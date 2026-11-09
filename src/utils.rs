@@ -4,6 +4,7 @@ use std::{
 };
 
 use chrono::{DateTime, Duration, Local};
+use colored::{ColoredString, Colorize};
 use rand::random;
 
 #[derive(Clone)]
@@ -68,10 +69,20 @@ impl Item {
 
 impl Display for Item {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        writeln!(f, "{}", self.title)?;
+        writeln!(
+            f,
+            "{}: {}",
+            ColoredString::from("title").yellow().bold(),
+            self.title
+        )?;
         match &self.description {
             Some(desc) => {
-                writeln!(f, "{}", desc)?;
+                writeln!(
+                    f,
+                    "{}: {}",
+                    ColoredString::from("description").green().bold(),
+                    desc
+                )?;
             }
             None => (),
         }
@@ -81,8 +92,13 @@ impl Display for Item {
                 let local: DateTime<Local> = DateTime::from(utc);
                 local.format("%b-%d-%Y").to_string()
             }
-            None => String::from("Invalid date"),
+            None => String::from("invalid date"),
         };
-        write!(f, "{}", date_to_display)
+        write!(
+            f,
+            "{}: {}",
+            ColoredString::from("review date").white().bold(),
+            date_to_display
+        )
     }
 }

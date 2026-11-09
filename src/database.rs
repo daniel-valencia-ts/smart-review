@@ -30,14 +30,9 @@ pub fn init() -> Result<Connection> {
 }
 
 pub fn insert_item(database: &mut Connection, item: &Item) -> Result<()> {
-    let description = match item.description.clone() {
-        Some(desc) => desc,
-        None => String::from("None"),
-    };
-
     match database.execute(
         "INSERT INTO items (id, title, description, review_date, successful_recalls, time_interval, easiness_factor) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
-        (item.id, item.title.as_str(), description, item.review_date, item.successful_recalls, item.time_interval, item.easiness_factor)
+        (item.id, item.title.as_str(), &item.description, item.review_date, item.successful_recalls, item.time_interval, item.easiness_factor)
     )? {
         0 => {
             bail!("the item couldn't be inserted")
