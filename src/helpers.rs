@@ -1,8 +1,16 @@
+use std::io::{Write, stdout};
+
 use crate::{
     database::{get_all_items, get_item, init, insert_item, remove_item, update_item},
     utils::Item,
 };
-use anyhow::{Result, anyhow, bail};
+use anyhow::{Context, Result, anyhow, bail};
+use crossterm::{
+    cursor::MoveToColumn,
+    event::read,
+    execute,
+    terminal::{Clear, ClearType, disable_raw_mode, enable_raw_mode},
+};
 
 pub fn get_stdin_content() -> Result<String, std::io::Error> {
     let mut content = String::new();
@@ -76,10 +84,44 @@ pub fn run() -> Result<Option<String>> {
                 match query {
                     Some(mut items) => {
                         items.sort_by(|a, b| a.review_date.cmp(&b.review_date));
-                        for item in &items {
-                            println!("{}", item);
-                            print!("\n");
+                        let mut items_as_iter = items.iter();
+                        let instructions =
+                            String::from("\"arrow down\" for printing more items, \"q\" to exit");
+
+                        println!("{}", items_as_iter.next().unwrap());
+                        print!("\n{}", instructions);
+                        std::io::stdout()
+                            .flush()
+                            .context("failed to flush to stdout")?; // Ensure that the instructions are actually printed
+
+                        enable_raw_mode().context("failed to enter raw mode")?;
+                        while let Ok(event) = read() {
+                            let Some(event) = event.as_key_press_event() else {
+                                continue;
+                            };
+                            execute!(
+                                &mut stdout(),
+                                Clear(ClearType::CurrentLine),
+                                MoveToColumn(0)
+                            )?;
+                            if event.code.is_down() || event.code.is_char('s') {
+                                match items_as_iter.next() {
+                                    Some(item) => {
+                                        let s = item.to_string().replace('\n', "\r\n");
+                                        print!("\r\n{}\r\n", s);
+                                        print!("\r\n{}", instructions);
+                                        std::io::stdout()
+                                            .flush()
+                                            .context("failed to flush to stdout")?;
+                                    }
+                                    None => break,
+                                }
+                            } else if event.code.is_esc() || event.code.is_char('q') {
+                                break;
+                            }
                         }
+
+                        disable_raw_mode().context("failed to disable raw mode")?
                     }
                     None => bail!("there are no items to print"),
                 }
