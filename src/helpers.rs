@@ -12,6 +12,24 @@ use crossterm::{
     terminal::{Clear, ClearType, disable_raw_mode, enable_raw_mode},
 };
 
+const HELP_MESSAGE: &str = r#"usage: "sr" or "smart-review" [option] [argument]
+options:
+
+        new: adds a new item with a title and an optional description.
+            takes no argument.
+
+        review: reviews an item and schedules the next review date.
+            takes as an argument the ID or title of the item.
+
+        remove: permanently deletes the target item.
+            takes as an argument its ID or title.
+
+        show: displays the target item or all of them if no argument is given.
+            optionally takes the ID or title of a target item to solely show it.
+
+arguments longer than a single word must be enclosed within quotes.
+"#;
+
 pub fn get_stdin_content() -> Result<String, std::io::Error> {
     let mut content = String::new();
     std::io::stdin().read_line(&mut content)?;
@@ -26,14 +44,14 @@ pub fn get_stdin_content() -> Result<String, std::io::Error> {
 
 pub fn run() -> Result<Option<String>> {
     let arguments: Vec<String> = std::env::args().collect();
-    let main_argument = arguments
+    let option = arguments
         .get(1)
         .ok_or_else(|| anyhow!("must enter an argument"))?;
-    let extra_argument = arguments.get(2);
+    let argument = arguments.get(2);
 
     let mut message: Option<String> = None;
     let mut conn = init()?;
-    match main_argument.as_str() {
+    match option.as_str() {
         "new" => {
             println!("enter the item's title:");
             let item_title = get_stdin_content()?;
@@ -49,7 +67,7 @@ pub fn run() -> Result<Option<String>> {
             insert_item(&mut conn, &item)?;
             message = Some(String::from("item inserted successfully"));
         }
-        "review" => match extra_argument {
+        "review" => match argument {
             Some(pattern) => {
                 let mut item = get_item(&mut conn, pattern)?;
                 println!("enter the quality of the review (in the range 1 to 5):");
@@ -67,14 +85,14 @@ pub fn run() -> Result<Option<String>> {
             }
             None => bail!("must enter the title or ID of an item"),
         },
-        "remove" => match extra_argument {
+        "remove" => match argument {
             Some(pattern) => {
                 remove_item(&mut conn, pattern)?;
                 message = Some(String::from("item removed successfully"));
             }
             None => bail!("must provide the title or ID of an item"),
         },
-        "show" => match extra_argument {
+        "show" => match argument {
             Some(pattern) => {
                 let item = get_item(&mut conn, pattern)?;
                 println!("{}", item);
@@ -127,7 +145,8 @@ pub fn run() -> Result<Option<String>> {
                 }
             }
         },
-        _ => bail!("\"{main_argument}\" is not a valid argument"),
+        "help" => print!("{HELP_MESSAGE}"),
+        _ => bail!("\"{option}\" is not a valid argument, use the \"help\" for more info"),
     }
 
     Ok(message)
