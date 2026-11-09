@@ -89,8 +89,13 @@ impl Display for Item {
 
         let date_to_display = match DateTime::from_timestamp(self.review_date, 0) {
             Some(utc) => {
-                let local: DateTime<Local> = DateTime::from(utc);
-                local.format("%b-%d-%Y").to_string()
+                let raw: DateTime<Local> = DateTime::from(utc);
+                let local = raw.format("%b-%d-%Y").to_string();
+                if local == Local::now().format("%b-%d-%Y").to_string() {
+                    String::from("Today")
+                } else {
+                    local
+                }
             }
             None => String::from("invalid date"),
         };
