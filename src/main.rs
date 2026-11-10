@@ -17,7 +17,7 @@ fn main() {
     if let Err(_) = disable_raw_mode() {
         eprintln!(
             "smart-review: {}",
-            "couldn't disable raw mode-".to_string().red().bold()
+            "couldn't disable raw mode".to_string().red().bold()
         );
     }
 }
