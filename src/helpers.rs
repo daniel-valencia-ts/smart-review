@@ -50,7 +50,11 @@ pub fn run() -> Result<Option<String>> {
             message = Some(String::from("item inserted successfully"));
         }
         "review" => match argument {
-            Some(pattern) => {
+            Some(raw) => {
+                let pattern = match u32::from_str_radix(raw, 16) {
+                    Ok(val) => &val.to_string(),
+                    Err(_) => raw
+                };
                 let mut item = get_item(&mut conn, pattern)?;
                 print!("enter the quality of the review: ");
                 std::io::stdout()
@@ -71,14 +75,22 @@ pub fn run() -> Result<Option<String>> {
             None => bail!("must enter the title or ID of an item"),
         },
         "remove" => match argument {
-            Some(pattern) => {
+            Some(raw) => {
+                let pattern = match u32::from_str_radix(raw, 16) {
+                    Ok(val) => &val.to_string(),
+                    Err(_) => raw
+                };
                 remove_item(&mut conn, pattern)?;
                 message = Some(String::from("item removed successfully"));
             }
             None => bail!("must provide the title or ID of an item"),
         },
         "show" => match argument {
-            Some(pattern) => {
+            Some(raw) => {
+                let pattern = match u32::from_str_radix(raw, 16) {
+                    Ok(val) => &val.to_string(),
+                    Err(_) => raw
+                };
                 let item = get_item(&mut conn, pattern)?;
                 println!("{}", item);
             }
