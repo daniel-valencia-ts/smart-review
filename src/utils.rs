@@ -125,8 +125,17 @@ pub fn get_help_message() -> String {
             "new".yellow().bold()
         ),
         format!(
-            "{}: reviews an item and schedules the next review date.\n\ttakes as an argument the ID or title of the item.",
-            "review".white().bold()
+            "{}: reviews an item and schedules the next review date, you'll be prompted for a rating between 0 and 5.\n\ttakes as an argument the ID or title of the item\n{}",
+            "review".white().bold(),
+            format!(
+                "{}: total blackout\n{}: incorrect but felt familiar\n{}: wrong but easy after review\n{}: right answer but hard to remember\n{}: correct but hesitated to answer\n{}: perfectly recalled",
+                "0".red().bold(),
+                "1".red(),
+                "2".red(),
+                "3".green(),
+                "4".green().bold(),
+                "5".yellow().bold()
+            )
         ),
         format!(
             "{}: permanently deletes the target item.\n\ttakes as an argument its ID or title.",

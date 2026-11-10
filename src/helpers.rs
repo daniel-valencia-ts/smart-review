@@ -52,7 +52,7 @@ pub fn run() -> Result<Option<String>> {
         "review" => match argument {
             Some(pattern) => {
                 let mut item = get_item(&mut conn, pattern)?;
-                println!("enter the quality of the review (in the range 1 to 5):");
+                println!("enter the quality of the review:");
                 match get_stdin_content()?.parse::<u8>() {
                     Ok(grade) => {
                         if grade < 1 || grade > 5 {
