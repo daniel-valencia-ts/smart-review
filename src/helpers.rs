@@ -52,10 +52,13 @@ pub fn run() -> Result<Option<String>> {
         "review" => match argument {
             Some(pattern) => {
                 let mut item = get_item(&mut conn, pattern)?;
-                println!("enter the quality of the review:");
+                print!("enter the quality of the review: ");
+                std::io::stdout()
+                    .flush()
+                    .context("failed to flush to stdout")?;
                 match get_stdin_content()?.parse::<u8>() {
                     Ok(grade) => {
-                        if grade < 1 || grade > 5 {
+                        if grade > 5 {
                             bail!("must enter a valid number");
                         }
                         item.review(grade);
