@@ -107,3 +107,35 @@ impl Display for Item {
         )
     }
 }
+
+pub fn get_help_message() -> String {
+    format!(
+        "{}\n\n{}\n\n{}\n\n{}\n\n{}\n\n{}",
+        format!(
+            "{}: {} or {} {} {}\n{}",
+            "usage".yellow().bold(),
+            "sr".blue().bold(),
+            "smart-review".blue().bold(),
+            "[option]".green(),
+            "[argument]".yellow(),
+            "options:".white().bold()
+        ),
+        format!(
+            "{}: adds a new item with a title and an optional description.\n\ttakes no argument",
+            "new".yellow().bold()
+        ),
+        format!(
+            "{}: reviews an item and schedules the next review date.\n\ttakes as an argument the ID or title of the item.",
+            "review".white().bold()
+        ),
+        format!(
+            "{}: permanently deletes the target item.\n\ttakes as an argument its ID or title.",
+            "remove".red().bold()
+        ),
+        format!(
+            "{}: displays the target item or all of them if no argument is given.\n\toptionally takes the ID or title of a target item to solely show it.",
+            "show".yellow().bold()
+        ),
+        "arguments longer than a single word must be enclosed within quotes."
+    )
+}

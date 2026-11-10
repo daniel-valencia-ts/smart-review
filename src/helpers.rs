@@ -2,7 +2,7 @@ use std::io::{Write, stdout};
 
 use crate::{
     database::{get_all_items, get_item, init, insert_item, remove_item, update_item},
-    utils::Item,
+    utils::{Item, get_help_message},
 };
 use anyhow::{Context, Result, anyhow, bail};
 use crossterm::{
@@ -11,24 +11,6 @@ use crossterm::{
     execute,
     terminal::{Clear, ClearType, disable_raw_mode, enable_raw_mode},
 };
-
-const HELP_MESSAGE: &str = r#"usage: "sr" or "smart-review" [option] [argument]
-options:
-
-        new: adds a new item with a title and an optional description.
-            takes no argument.
-
-        review: reviews an item and schedules the next review date.
-            takes as an argument the ID or title of the item.
-
-        remove: permanently deletes the target item.
-            takes as an argument its ID or title.
-
-        show: displays the target item or all of them if no argument is given.
-            optionally takes the ID or title of a target item to solely show it.
-
-arguments longer than a single word must be enclosed within quotes.
-"#;
 
 pub fn get_stdin_content() -> Result<String, std::io::Error> {
     let mut content = String::new();
@@ -145,7 +127,7 @@ pub fn run() -> Result<Option<String>> {
                 }
             }
         },
-        "help" => print!("{HELP_MESSAGE}"),
+        "help" => println!("{}", get_help_message()),
         _ => bail!("\"{option}\" is not a valid argument, use the \"help\" for more info"),
     }
 
