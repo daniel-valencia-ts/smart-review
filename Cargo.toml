@@ -1,7 +1,17 @@
 [package]
-name = "sr"
+name = "smart-review"
 version = "0.1.0"
 edition = "2024"
+authors = ["Daniel Valencia"]
+description = "A CLI tool for applying the spaced repetition technique"
+license = "MIT"
+repository = "https://github.com/daniel-valencia-ts/smart-review"
+keywords = ["cli", "tool", "spaced-repetition", "sm-2"]
+categories = ["command-line-utilities"]
+
+[[bin]]
+name = "sr"
+path = "src/main.rs"
 
 [dependencies]
 anyhow = "1.0.104"

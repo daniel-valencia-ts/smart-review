@@ -15,10 +15,10 @@ cargo install smart-review
 
 However, you can also download the source code and compile `smart-review` yourself.
 
-1. Clone this repository to your local machine by using the command: 
+1. Clone this repository to your local machine by using the command:
 ```bash
 git clone https://github.com/daniel-valencia-ts/smart-review.git
-``` 
+```
 
 2. From the cloned repository, execute:
 ```bash
@@ -27,11 +27,11 @@ cargo run
 
 ## Usage
 
-Run `smart-review` or `sr` with any of the following options:
+Run `sr` with any of the following options:
 
 - add a new item:
 ```bash
-sr new 
+sr new
 ```
 
 - review an item, where `arg` must be either the item's ID or title:
