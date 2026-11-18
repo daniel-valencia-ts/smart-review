@@ -1,4 +1,4 @@
-# Smart Review
+# smart-review [![Crates.io](https://img.shields.io/crates/v/smart-review)](https://crates.io/crates/smart-review) ![Downloads](https://img.shields.io/crates/d/smart-review)
 
 Powered by the SM-2 algorithm, efficiently apply the [spaced repetition](https://en.wikipedia.org/wiki/Spaced_repetition) technique by creating items, giving them a title and a description, and rating the quality of your reviews.
 
