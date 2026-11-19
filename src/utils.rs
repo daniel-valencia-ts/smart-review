@@ -4,8 +4,18 @@ use std::{
 };
 
 use chrono::{DateTime, Duration, Local};
+use clap::{Parser, Subcommand};
 use colored::Colorize;
 use rand::random;
+
+pub const CLAP_STYLING: clap::builder::styling::Styles = clap::builder::styling::Styles::styled()
+    .header(clap_cargo::style::HEADER)
+    .usage(clap_cargo::style::USAGE)
+    .literal(clap_cargo::style::LITERAL)
+    .placeholder(clap_cargo::style::PLACEHOLDER)
+    .error(clap_cargo::style::ERROR)
+    .valid(clap_cargo::style::VALID)
+    .invalid(clap_cargo::style::INVALID);
 
 #[derive(Clone)]
 pub struct Item {
@@ -94,43 +104,50 @@ impl Display for Item {
     }
 }
 
-pub fn get_help_message() -> String {
-    format!(
-        "{}\n\n{}\n\n{}\n\n{}\n\n{}\n\n{}",
-        format!(
-            "{}: {} or {} {} {}\n{}",
-            "usage".yellow().bold(),
-            "sr".blue().bold(),
-            "smart-review".blue().bold(),
-            "[option]".green(),
-            "[argument]".yellow(),
-            "options:".white().bold()
-        ),
-        format!(
-            "{}: adds a new item with a title and an optional description.\n\ttakes no argument",
-            "new".yellow().bold()
-        ),
-        format!(
-            "{}: reviews an item and schedules the next review date, you'll be prompted for a rating between 0 and 5.\n\ttakes as an argument the ID or title of the item\n{}",
-            "review".white().bold(),
-            format!(
-                "{}: total blackout\n{}: incorrect but felt familiar\n{}: wrong but easy after review\n{}: right answer but hard to remember\n{}: correct but hesitated to answer\n{}: perfectly recalled",
-                "0".red().bold(),
-                "1".red(),
-                "2".red(),
-                "3".green(),
-                "4".green().bold(),
-                "5".yellow().bold()
-            )
-        ),
-        format!(
-            "{}: permanently deletes the target item.\n\ttakes as an argument its ID or title.",
-            "remove".red().bold()
-        ),
-        format!(
-            "{}: displays the target item or all of them if no argument is given.\n\toptionally takes the ID or title of a target item to solely show it.",
-            "show".yellow().bold()
-        ),
-        "arguments longer than a single word must be enclosed within quotes."
-    )
+/// Review information with the spaced-repetition technique from your terminal.
+#[derive(Parser)]
+#[command(version, styles = CLAP_STYLING)]
+pub struct Cli {
+    #[command(subcommand)]
+    pub operations: Operations,
+}
+
+#[derive(Subcommand)]
+pub enum Operations {
+    /// Create a new item with the given data
+    New {
+        /// Title of the item
+        title: String,
+
+        /// Optional description of the item
+        #[arg(short, long)]
+        description: Option<String>,
+    },
+    /// Review an item, use the --help command for more details
+    ///
+    /// Explanation of each grade number:
+    ///     0 - Total blackout
+    ///     1 - Incorrect, but felt familiar afterwards
+    ///     2 - Wrong, but easy after reviewing it
+    ///     3 - Right answer, hard to remember
+    ///     4 - Correct, but hesitated before answering
+    ///     5 - Perfectly recalled
+    #[command(verbatim_doc_comment)]
+    Review {
+        /// The ID or title of the target item
+        raw_pattern: String,
+        /// The self-evaluation of the quality of the review
+        review_grade: u8,
+    },
+    /// Remove an item with the matching pattern
+    Remove {
+        /// The item's ID or title
+        raw_pattern: String,
+    },
+    /// Show an item
+    Show {
+        /// The pattern can be omitted to enter the display mode
+        #[arg(short = 'p', long = "pattern")]
+        raw_pattern: Option<String>,
+    },
 }
