@@ -25,26 +25,6 @@ git clone https://github.com/daniel-valencia-ts/smart-review.git
 cargo run
 ```
 
-## Usage
+## Usage 
 
-Run `sr` with any of the following options:
-
-- add a new item:
-```bash
-sr new
-```
-
-- review an item, where `arg` must be either the item's ID or title:
-```bash
-sr review arg
-```
-
-- remove the first item that matches the given ID or title:
-```bash
-sr remove arg
-```
-
-- display a single item or all of them if no ID or title is given:
-```bash
-sr show arg # optional
-```
+Run `sr --help` for instructions.
